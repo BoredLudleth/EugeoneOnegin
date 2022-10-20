@@ -1,4 +1,4 @@
-all: solver test
+all: run_sort
 
 main.o: main.cpp
 	g++ -c main.cpp -o main.o
