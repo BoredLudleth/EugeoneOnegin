@@ -65,3 +65,12 @@ int linesFile(FILE *text){
     fseek(text, 0, SEEK_SET);
     return ++lines;
 }
+
+void TextDestrustor(FILE* text, FILE*  sorted_text, char* allText, char** index)
+{
+    free(index);
+    free(allText);
+
+    fclose(text);
+    fclose(sorted_text);
+}
