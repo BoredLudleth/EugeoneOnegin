@@ -6,8 +6,8 @@ main.o: main.cpp
 oneginfunctions.o: OneginFunctions.cpp
 	g++ -c OneginFunctions.cpp -o oneginfunctions.o
 
-sort_text: main.o oneginfunctions.o
-	g++ main.o oneginfunctions.o -o sort_text
+run_sort: main.o oneginfunctions.o
+	g++ main.o oneginfunctions.o -o run_sort
 
-run_sort: sort_text
-	.\sort_text
+clean:
+	rm *.o
