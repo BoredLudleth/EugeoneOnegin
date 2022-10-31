@@ -10,4 +10,4 @@ run_sort: main.o oneginfunctions.o
 	g++ main.o oneginfunctions.o -o run_sort
 
 clean:
-	rm *.o
+	rm *.o *.exe
