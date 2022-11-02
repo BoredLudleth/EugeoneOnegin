@@ -17,29 +17,29 @@
         exit(0);                                                                        \
     }
 
-// struct TextStruct 
-// {
-//     FILE* text;
-//     FILE*  sorted_text;
-//     int length;
-//     int line;
-//     char* allText;
-//     char** index;
-// };
-//
-// void TextConstructor (struct TextStruct* p_s);
+struct TextStruct 
+{
+    FILE* text;
+    FILE*  sorted_text;
+    int length;
+    int line;
+    char* allText;
+    char** index;
+};
 
-void TextRead(FILE *text, char* allText, char** index, int* line, int length);
+void TextConstructor (struct TextStruct* p_s);
 
-void TextSorter(char** index, int length, int line);
+void TextRead(struct TextStruct* p_s);
 
-void TextPrint(FILE *sorted_text, char** index, int line);
+void TextSorter(struct TextStruct* p_s);
+
+void TextPrint(struct TextStruct* p_s);
 
 int lenFile(FILE *text);
 
 int linesFile(FILE *text);
 
-void TextDestrustor(FILE* text, FILE*  sorted_text, char* allText, char** index);
+void TextDestrustor(struct TextStruct* p_s);
 
 bool checkSpace (char* st);
 

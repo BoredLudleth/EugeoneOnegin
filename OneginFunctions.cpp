@@ -1,80 +1,90 @@
 #include "OneginFunctions.hpp"
 
-// void TextConstructor (struct TextStruct* p_s)
-// {
-//     p_s->text = fopen("TEXT.txt", "rb");
-//     p_s->sorted_text = fopen("SORTEDTEXT.txt", "wb");
-//     NEWASSERT(text == NULL or sorted_text == NULL); 
-
-//     p_s->length = lenFile(p_s->text);
-//     p_s->line = linesFile(p_s->text);
-//     p_s->allText = allText = (char*) calloc (length, sizeof(char));
-//     p_s index = index = (char**) calloc (line, sizeof(char*));
-
-//     NEWASSERT(p_s->allText == NULL or p_s->index == NULL); 
-// }
-
-void TextRead(FILE *text, char* allText, char** index, int* line, int length)
+void TextConstructor (struct TextStruct* p_s)
 {
-    length = fread(allText, sizeof(char), (size_t) (length), text);
-    allText = (char*) realloc(allText, (length + 1) * sizeof(char));
-    int count = 0;
-    
-    for (int i = 0; i < length; i++)
+    p_s->line = 0;
+
+    char readFileName[100] = {};
+    printf("Which file do you want to open? Please write NAME_OF_FILE.txt\n");
+    scanf("%s", readFileName);
+    p_s->text = fopen(readFileName, "rb+");
+
+    char writeFileName[100] = {};
+    printf("Which file do you want to use for output? Please write NAME_OF_FILE.txt\n");
+    scanf("%s", writeFileName);    
+    p_s->sorted_text = fopen(writeFileName, "wb+");
+
+    NEWASSERT(p_s->text == NULL or p_s->sorted_text == NULL); 
+
+    p_s->length = lenFile(p_s->text);
+    p_s->allText = (char*) calloc (p_s->length, sizeof(char));
+    int howManySymbolRead = fread(p_s->allText, sizeof(char), (size_t) (p_s->length), p_s->text);
+
+    NEWASSERT(howManySymbolRead == 0);
+
+    for (int i = 0; i < (p_s->length); i++)
     {
-        if (allText[i] == '\n')
+        if (p_s->allText[i] == '\n')
         {
-            (*line)++;
+            (p_s->line) += 1;
         }
     }
 
-    *index = allText;
-    allText[length] = '\0';
-    length = strlen(allText) + 1;
+    p_s->index = (char**) calloc (p_s->line, sizeof(char*));
 
-    for (int i = 0; i < length; i++)
+    NEWASSERT(p_s->allText == NULL or p_s->index == NULL); 
+}
+
+void TextRead(struct TextStruct* p_s)
+{
+    int count = 0;
+
+    p_s->allText[p_s->length] = '\0';
+    p_s->index[0] = &(p_s->allText[0]);
+
+    for (int i = 0; i < p_s->length; i++)
     {
-        if (allText[i] == '\n') 
+        if (p_s->allText[i] == '\n') 
         {
-            allText[i] = '\0';
+            p_s->allText[i] = '\0';
             count++;
         }
 
-        if ((i > 0) && (allText[i - 1] == '\0')) 
+        if ((i > 0) && (p_s->allText[i - 1] == '\0')) 
         {
-            *(index + count) = allText + i;
+            p_s->index[count] = p_s->allText + i;
         }
     }
 }
 
-void TextSorter(char** index, int length, int line) 
+void TextSorter(struct TextStruct* p_s) 
 {
     char* buffer = NULL;
 
-    for (int i = 0; i < line; i++) 
+    for (int i = 0; i < (p_s->line); i++) 
     {
-        for (int j = 0; j < (line - 1 - i); j++) 
+        for (int j = 0; j < (p_s->line - i- 1); j++) 
         {
-            if (comporator(*(index + j), *(index + j +1)) > 0) 
+            if (comporator(p_s->index[j], p_s->index[j +1]) > 0) 
             {
-                buffer = *(index + j);
-                *(index + j) = *(index + j +1);
-                *(index + j + 1) = buffer;
+                buffer = p_s->index[j];
+                p_s->index[j] = p_s->index[j + 1];
+                p_s->index[j + 1] = buffer;
             }
         }
     }
-}//почекать
+}
 
-void TextPrint(FILE *sorted_text, char** index, int line)
+void TextPrint(struct TextStruct* p_s)
 {
-    for (int i = 0; i < line; i++)
+    for (int i = 0; i < p_s->line; i++)
     {   
 #ifdef WITHOUT_SPACE
-        if (comporator(*(index + i), (char*) "\0") > 0)
+        if (comporator(p_s->index[i], (char*) "\0") > 0)
 #endif //WITHOUT_SPACE
         {
-            fputs(*(index + i), sorted_text);
-            fputs("\n", sorted_text);
+            fputs(p_s->index[i], p_s->sorted_text);
+            fputs("\n", p_s->sorted_text);
         }
     }
 }
@@ -88,31 +98,13 @@ int lenFile(FILE *text)
     return length;    
 }
 
-// int linesFile(FILE *text)
-// {
-//     int lines = 0;
-//     int ch = 0;
-
-//     while ((ch = fgetc(text)) != EOF) 
-//     {
-//         if (ch == '\n')
-//         {
-//             lines++;
-//         }
-//     }
-
-//     fseek(text, 0, SEEK_SET);
-    
-//     return ++lines;
-// }
-
-void TextDestrustor(FILE* text, FILE*  sorted_text, char* allText, char** index)
+void TextDestrustor(struct TextStruct* p_s)
 {
-    free(index);
-    free(allText);
+    free(p_s->index);
+    free(p_s->allText);
 
-    fclose(text);
-    fclose(sorted_text);
+    fclose(p_s->text);
+    fclose(p_s->sorted_text);
 }
 
 char comporator (char* cs, char* st)
@@ -134,6 +126,7 @@ char comporator (char* cs, char* st)
     {
         if (cs[i] != '\0' && st[j] != '\0')
             break;
+
         while (!isalpha(cs[i]))
         {
             i++;
