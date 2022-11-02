@@ -9,14 +9,14 @@ int main()
     NEWASSERT(text == NULL or sorted_text == NULL); 
 
     int length = lenFile(text);
-    int line = linesFile(text);
+    int line = 0;
 
     char* allText = (char*) calloc (length, sizeof(char));
     char** index = (char**) calloc (line, sizeof(char*));
 
     NEWASSERT(allText == NULL or index == NULL); 
 
-    TextRead(text, allText, index, line, length);
+    TextRead(text, allText, index, &line, length);
     
     TextSorter(index, length, line);
     

@@ -1,10 +1,32 @@
 #include "OneginFunctions.hpp"
 
-void TextRead(FILE *text, char* allText, char** index, int line, int length)
+// void TextConstructor (struct TextStruct* p_s)
+// {
+//     p_s->text = fopen("TEXT.txt", "rb");
+//     p_s->sorted_text = fopen("SORTEDTEXT.txt", "wb");
+//     NEWASSERT(text == NULL or sorted_text == NULL); 
+
+//     p_s->length = lenFile(p_s->text);
+//     p_s->line = linesFile(p_s->text);
+//     p_s->allText = allText = (char*) calloc (length, sizeof(char));
+//     p_s index = index = (char**) calloc (line, sizeof(char*));
+
+//     NEWASSERT(p_s->allText == NULL or p_s->index == NULL); 
+// }
+
+void TextRead(FILE *text, char* allText, char** index, int* line, int length)
 {
     length = fread(allText, sizeof(char), (size_t) (length), text);
     allText = (char*) realloc(allText, (length + 1) * sizeof(char));
     int count = 0;
+    
+    for (int i = 0; i < length; i++)
+    {
+        if (allText[i] == '\n')
+        {
+            (*line)++;
+        }
+    }
 
     *index = allText;
     allText[length] = '\0';
@@ -23,7 +45,6 @@ void TextRead(FILE *text, char* allText, char** index, int line, int length)
             *(index + count) = allText + i;
         }
     }
-
 }
 
 void TextSorter(char** index, int length, int line) 
@@ -34,7 +55,7 @@ void TextSorter(char** index, int length, int line)
     {
         for (int j = 0; j < (line - 1 - i); j++) 
         {
-            if (strcmp(*(index + j), *(index + j +1)) > 0) 
+            if (comporator(*(index + j), *(index + j +1)) > 0) 
             {
                 buffer = *(index + j);
                 *(index + j) = *(index + j +1);
@@ -47,11 +68,16 @@ void TextSorter(char** index, int length, int line)
 void TextPrint(FILE *sorted_text, char** index, int line)
 {
     for (int i = 0; i < line; i++)
-    {
-        fputs(*(index + i), sorted_text);
-        fputs("\n", sorted_text);
+    {   
+#ifdef WITHOUT_SPACE
+        if (comporator(*(index + i), (char*) "\0") > 0)
+#endif //WITHOUT_SPACE
+        {
+            fputs(*(index + i), sorted_text);
+            fputs("\n", sorted_text);
+        }
     }
-}//fprintf
+}
 
 int lenFile(FILE *text)
 {
@@ -62,23 +88,23 @@ int lenFile(FILE *text)
     return length;    
 }
 
-int linesFile(FILE *text)
-{
-    int lines = 0;
-    int ch = 0;
+// int linesFile(FILE *text)
+// {
+//     int lines = 0;
+//     int ch = 0;
 
-    while ((ch = fgetc(text)) != EOF) 
-    {
-        if (ch == '\n')
-        {
-            lines++;
-        }
-    }
+//     while ((ch = fgetc(text)) != EOF) 
+//     {
+//         if (ch == '\n')
+//         {
+//             lines++;
+//         }
+//     }
 
-    fseek(text, 0, SEEK_SET);
+//     fseek(text, 0, SEEK_SET);
     
-    return ++lines;
-}
+//     return ++lines;
+// }
 
 void TextDestrustor(FILE* text, FILE*  sorted_text, char* allText, char** index)
 {
@@ -87,4 +113,37 @@ void TextDestrustor(FILE* text, FILE*  sorted_text, char* allText, char** index)
 
     fclose(text);
     fclose(sorted_text);
+}
+
+char comporator (char* cs, char* st)
+{
+    int i = 0;
+    int j = 0;
+
+    while (!isalpha(cs[i]) && cs[i] != '\0')
+    {
+        i++;
+    }
+
+    while (!isalpha(st[j]) && st[j] != '\0')
+    {
+        j++;
+    }
+
+    for ( ; cs[i] == st[j] && cs[i] != '\0'; i++, j++)
+    {
+        if (cs[i] != '\0' && st[j] != '\0')
+            break;
+        while (!isalpha(cs[i]))
+        {
+            i++;
+        }
+
+        while (!isalpha(st[j]))
+        {
+            j++;
+        } 
+    }
+
+    return cs[i] - st[j]; 
 }
