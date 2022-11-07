@@ -7,7 +7,11 @@ int main()
 
     TextConstructor (p_s);
     TextRead(p_s);
+    // #ifdef QUICKSORT
+    // qsort(void *base, size_t num, size_t size, int (*compare) (const void *, const void *));
+    // #else
     TextSorter(p_s);
+    // #endif //QUICKSORT
     TextPrint(p_s);
     TextDestrustor(p_s);
     

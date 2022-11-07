@@ -4,13 +4,13 @@ void TextConstructor (struct TextStruct* p_s)
 {
     p_s->line = 0;
 
-    char readFileName[100] = {};
-    printf("Which file do you want to open? Please write NAME_OF_FILE.txt\n");
+    char readFileName[100] = "";
+    printf("Which file do you want to open? Please write NAME_OF_FILE.type\n");
     scanf("%s", readFileName);
     p_s->text = fopen(readFileName, "rb+");
 
-    char writeFileName[100] = {};
-    printf("Which file do you want to use for output? Please write NAME_OF_FILE.txt\n");
+    char writeFileName[100] = "";
+    printf("Which file do you want to use for output? Please write NAME_OF_FILE.type\n");
     scanf("%s", writeFileName);    
     p_s->sorted_text = fopen(writeFileName, "wb+");
 

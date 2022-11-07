@@ -20,7 +20,7 @@
 struct TextStruct 
 {
     FILE* text;
-    FILE*  sorted_text;
+    FILE* sorted_text;
     int length;
     int line;
     char* allText;
