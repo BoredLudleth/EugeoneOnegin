@@ -2,7 +2,7 @@
 
 void TextConstructor (struct TextStruct* p_s)
 {
-    p_s->line = 0;
+    p_s->line = 1;
 
     char readFileName[100] = "";
     printf("Which file do you want to open? Please write NAME_OF_FILE.type\n");
@@ -57,7 +57,7 @@ void TextRead(struct TextStruct* p_s)
     }
 }
 
-void TextSorter(struct TextStruct* p_s) 
+void TextSorter(struct TextStruct* p_s, char (*f)(char*,char*))
 {
     char* buffer = NULL;
 
@@ -65,7 +65,7 @@ void TextSorter(struct TextStruct* p_s)
     {
         for (int j = 0; j < (p_s->line - i- 1); j++) 
         {
-            if (comporator(p_s->index[j], p_s->index[j +1]) > 0) 
+            if (f(p_s->index[j], p_s->index[j +1]) > 0) 
             {
                 buffer = p_s->index[j];
                 p_s->index[j] = p_s->index[j + 1];
@@ -139,4 +139,38 @@ char comporator (char* cs, char* st)
     }
 
     return cs[i] - st[j]; 
+}
+
+char comporator_fromback(char* cs, char* st)
+{
+    int i = strlen(cs) - 1;
+    int j = strlen(st) - 1;
+
+    while (!isalpha(cs[i]) && i >= 0)
+    {
+        i--;
+    }
+
+    while (!isalpha(st[j]) && j >= 0)
+    {
+        j--;
+    }
+
+    for ( ; (tolower (cs[i]) == tolower (st[j])) || i < 0 || j < 0; i--, j--)
+    {
+        if (i < 0 || j < 0)
+            break;
+
+        while (!isalpha(cs[i]) && i >=0)
+        {
+            i--;
+        }
+
+        while (!isalpha(st[j]) && j >=0)
+        {
+            j--;
+        } 
+    }
+
+    return tolower(cs[i]) - tolower(st[j]); 
 }

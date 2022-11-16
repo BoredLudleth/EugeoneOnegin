@@ -8,6 +8,8 @@
 
 #define WITHOUT_SPACE
 
+#define NORMAL_SORT
+
 #define DBG printf("FILE:%s FUNC:%s LINE:%d\n", __FILE__, __FUNCTION__, __LINE__);
 
 #define NEWASSERT(condition)                                                            \
@@ -29,20 +31,22 @@ struct TextStruct
 
 void TextConstructor (struct TextStruct* p_s);
 
-void TextRead(struct TextStruct* p_s);
+void TextRead (struct TextStruct* p_s);
 
-void TextSorter(struct TextStruct* p_s);
+void TextSorter (struct TextStruct* p_s, char (*f)(char*,char*));
 
-void TextPrint(struct TextStruct* p_s);
+void TextPrint (struct TextStruct* p_s);
 
-int lenFile(FILE *text);
+int lenFile (FILE *text);
 
-int linesFile(FILE *text);
+int linesFile (FILE *text);
 
-void TextDestrustor(struct TextStruct* p_s);
+void TextDestrustor (struct TextStruct* p_s);
 
 bool checkSpace (char* st);
 
 char comporator (char* cs, char* st);
+
+char comporator_fromback (char* cs, char* st);
 
 #endif // ONEGIN_FUNCTIONS_H
