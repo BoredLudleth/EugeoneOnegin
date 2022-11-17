@@ -2,14 +2,12 @@
 
 void TextConstructor (struct TextStruct* p_s)
 {
-    p_s->line = 1;
-
-    char readFileName[100] = "";
+    char readFileName[MAXLENGTHOFFILENAME] = "";
     printf("Which file do you want to open? Please write NAME_OF_FILE.type\n");
     scanf("%s", readFileName);
     p_s->text = fopen(readFileName, "rb+");
 
-    char writeFileName[100] = "";
+    char writeFileName[MAXLENGTHOFFILENAME] = "";
     printf("Which file do you want to use for output? Please write NAME_OF_FILE.type\n");
     scanf("%s", writeFileName);    
     p_s->sorted_text = fopen(writeFileName, "wb+");
@@ -22,17 +20,12 @@ void TextConstructor (struct TextStruct* p_s)
 
     NEWASSERT(howManySymbolRead == 0);
 
-    for (int i = 0; i < (p_s->length); i++)
-    {
-        if (p_s->allText[i] == '\n')
-        {
-            (p_s->line) += 1;
-        }
-    }
+    countLines(p_s);
 
-    p_s->index = (char**) calloc (p_s->line, sizeof(char*));
+    p_s->lineInfo.index = (char**) calloc (p_s->line, sizeof(char*));
+    p_s->lineInfo.length = (int*) calloc (p_s->line, sizeof(int));
 
-    NEWASSERT(p_s->allText == NULL or p_s->index == NULL); 
+    NEWASSERT(p_s->allText == NULL or p_s->lineInfo.index == NULL or p_s->lineInfo.length == NULL); 
 }
 
 void TextRead(struct TextStruct* p_s)
@@ -40,7 +33,7 @@ void TextRead(struct TextStruct* p_s)
     int count = 0;
 
     p_s->allText[p_s->length] = '\0';
-    p_s->index[0] = &(p_s->allText[0]);
+    p_s->lineInfo.index[0] = &(p_s->allText[0]);
 
     for (int i = 0; i < p_s->length; i++)
     {
@@ -52,8 +45,31 @@ void TextRead(struct TextStruct* p_s)
 
         if ((i > 0) && (p_s->allText[i - 1] == '\0')) 
         {
-            p_s->index[count] = p_s->allText + i;
+            p_s->lineInfo.index[count] = p_s->allText + i;
         }
+    }
+
+    setLengths(p_s);
+}
+
+void countLines (struct TextStruct* p_s)
+{
+    p_s->line = 1;
+
+    for (int i = 0; i < (p_s->length); i++)
+    {
+        if (p_s->allText[i] == '\n')
+        {
+            (p_s->line) += 1;
+        }
+    }
+}
+
+void setLengths (struct TextStruct* p_s)
+{
+    for (int i = 0; i < (p_s->line); i++)
+    {
+        p_s->lineInfo.length[i] = strlen(p_s->lineInfo.index[i]);
     }
 }
 
@@ -65,11 +81,11 @@ void TextSorter(struct TextStruct* p_s, char (*f)(char*,char*))
     {
         for (int j = 0; j < (p_s->line - i- 1); j++) 
         {
-            if (f(p_s->index[j], p_s->index[j +1]) > 0) 
+            if (f(p_s->lineInfo.index[j], p_s->lineInfo.index[j +1]) > 0) 
             {
-                buffer = p_s->index[j];
-                p_s->index[j] = p_s->index[j + 1];
-                p_s->index[j + 1] = buffer;
+                buffer = p_s->lineInfo.index[j];
+                p_s->lineInfo.index[j] = p_s->lineInfo.index[j + 1];
+                p_s->lineInfo.index[j + 1] = buffer;
             }
         }
     }
@@ -80,10 +96,10 @@ void TextPrint(struct TextStruct* p_s)
     for (int i = 0; i < p_s->line; i++)
     {   
 #ifdef WITHOUT_SPACE
-        if (comporator(p_s->index[i], (char*) "\0") > 0)
+        if (comporator(p_s->lineInfo.index[i], (char*) "\0") > 0)
 #endif //WITHOUT_SPACE
         {
-            fputs(p_s->index[i], p_s->sorted_text);
+            fputs(p_s->lineInfo.index[i], p_s->sorted_text);
             fputs("\n", p_s->sorted_text);
         }
     }
@@ -100,7 +116,8 @@ int lenFile(FILE *text)
 
 void TextDestrustor(struct TextStruct* p_s)
 {
-    free(p_s->index);
+    free(p_s->lineInfo.index);
+    free(p_s->lineInfo.length);
     free(p_s->allText);
 
     fclose(p_s->text);

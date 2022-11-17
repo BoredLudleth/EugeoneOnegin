@@ -8,7 +8,9 @@
 
 #define WITHOUT_SPACE
 
-#define NORMAL_SORT
+//#define NORMAL_SORT
+
+#define MAXLENGTHOFFILENAME 160
 
 #define DBG printf("FILE:%s FUNC:%s LINE:%d\n", __FILE__, __FUNCTION__, __LINE__);
 
@@ -19,6 +21,12 @@
         exit(0);                                                                        \
     }
 
+struct indexAndLength 
+{
+    char** index; 
+    int* length;
+};
+
 struct TextStruct 
 {
     FILE* text;
@@ -26,12 +34,16 @@ struct TextStruct
     int length;
     int line;
     char* allText;
-    char** index;
+    struct indexAndLength lineInfo;
 };
 
 void TextConstructor (struct TextStruct* p_s);
 
 void TextRead (struct TextStruct* p_s);
+
+void countLines (struct TextStruct* p_s);
+
+void setLengths (struct TextStruct* p_s);
 
 void TextSorter (struct TextStruct* p_s, char (*f)(char*,char*));
 

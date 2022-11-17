@@ -2,7 +2,7 @@
 
 int main()
 {
-    struct TextStruct st;
+    struct TextStruct st = {};
     struct TextStruct* p_s = &st;
     
     #ifdef NORMAL_SORT
